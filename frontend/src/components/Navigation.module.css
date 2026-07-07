@@ -1,0 +1,22 @@
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 24px;
+}
+
+.dropdown {
+    display: none;
+    padding-right: 24px;
+}
+
+@media (max-width: 674px) {
+    .nav {
+        display: none;
+    }
+
+    .dropdown {
+        display: flex;
+        align-items: center;
+    }
+}

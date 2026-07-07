@@ -1,0 +1,30 @@
+.body {
+    min-width: min(520px, calc(100vw - 64px));
+}
+
+.resources {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.resourceDetails {
+    padding: 0 16px 16px;
+}
+
+.resourceSummary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.empty {
+    margin: 0;
+    color: var(--g-color-text-secondary);
+}
+
+@media (max-width: 615px) {
+    .body {
+        min-width: auto;
+    }
+}

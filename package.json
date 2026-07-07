@@ -1,0 +1,46 @@
+{
+    "name": "shri-students-template",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Шаблон проекта для курса ШРИ 2026 — Asteroid Mining Corp",
+    "scripts": {
+        "postinstall": "npx husky",
+        "build": "npm run build --workspaces",
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+        "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+        "lint": "npm run lint --workspaces --if-present",
+        "lint:fix": "npm run lint:fix --workspaces --if-present",
+        "start": "run-p start:backend start:frontend",
+        "start:backend": "cd backend && npm run dev",
+        "start:frontend": "cd frontend && npm run dev"
+    },
+    "workspaces": [
+        "frontend",
+        "backend"
+    ],
+    "lint-staged": {
+        "frontend/**/*.{ts,tsx,js,jsx}": [
+            "eslint --fix --config frontend/eslint.config.cjs",
+            "prettier --write"
+        ],
+        "backend/**/*.{ts,tsx,js,jsx}": [
+            "eslint --fix --config backend/eslint.config.cjs",
+            "prettier --write"
+        ],
+        "frontend/**/*.{json,css,md}": [
+            "prettier --write"
+        ],
+        "backend/**/*.{json,md}": [
+            "prettier --write"
+        ],
+        "*.{json,css,md}": [
+            "prettier --write"
+        ]
+    },
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.7",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^3.8.1"
+    }
+}
