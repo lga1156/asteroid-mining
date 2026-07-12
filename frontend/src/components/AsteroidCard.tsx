@@ -2,7 +2,7 @@ import { useState } from 'react';
 import placeholderUrl from '../assets/asteroid-placeholder.svg';
 import styles from './AsteroidCard.module.css';
 import { Card, DefinitionList } from '@gravity-ui/uikit';
-import type { Asteroid } from '../types/asteroid';
+import type { Asteroid } from '../types/domain';
 import { AsteroidDialog } from './AsteroidDialog';
 import { MineAsteroidButton } from './MineAsteroidButton';
 import { ResourceIcon } from './ResourceIcon';

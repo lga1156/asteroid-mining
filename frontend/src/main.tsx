@@ -7,7 +7,13 @@ import '@gravity-ui/uikit/styles/styles.css';
 import './index.css';
 import { App } from './App';
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root');
+
+if (!rootElement) {
+    throw new Error('Application root element was not found');
+}
+
+createRoot(rootElement).render(
     <StrictMode>
         <ThemeProvider theme="light">
             <App />
