@@ -5,23 +5,13 @@
         "moduleResolution": "NodeNext",
         "outDir": "./dist",
         "rootDir": "./",
+        "strict": true,
         "skipLibCheck": true,
-        "noEmit": true,
-        "allowImportingTsExtensions": true,
+        "noEmit": false,
         "isolatedModules": true,
-        "lib": [
-            "ES2022"
-        ],
-        "types": [
-            "node"
-        ]
+        "lib": ["ES2022"],
+        "types": ["node"]
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "**/*.test.ts"
-    ]
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

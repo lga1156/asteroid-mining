@@ -4,7 +4,7 @@
  */
 
 export interface Mining {
-  id: string; // id of the mining operation
-  ttl: number; // finish time in milliseconds (timestamp)
-  status: 'active' | 'done'; // mining status
+    id: string; // id of the mining operation
+    ttl: number; // finish time in milliseconds (timestamp)
+    status: 'active' | 'done'; // mining status
 }

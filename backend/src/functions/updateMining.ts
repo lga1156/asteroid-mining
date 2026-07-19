@@ -4,7 +4,8 @@
  */
 
 import { Mining } from '../types';
+import { dbService } from '../services/dbService';
 
 export async function updateMining(status: Mining['status']): Promise<void> {
-  // your code here
+    await dbService.updateAllMiningStatuses(status);
 }
