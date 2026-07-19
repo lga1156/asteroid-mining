@@ -1,0 +1,120 @@
+.card {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--g-color-base-background);
+}
+
+.preview,
+.titleButton {
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+}
+
+.preview {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+    background: linear-gradient(140deg, #edf2f7, #d9e1ea);
+}
+
+.preview[data-variant='1'] {
+    background: linear-gradient(140deg, #e8ebf8, #cfd6e7);
+}
+
+.preview[data-variant='2'] {
+    background: linear-gradient(140deg, #ece7df, #d5c9b7);
+}
+
+.preview[data-variant='3'] {
+    background: linear-gradient(140deg, #e4efec, #c7d9d6);
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    transition: transform 180ms ease;
+}
+
+.preview:hover .image {
+    transform: scale(1.035) rotate(-1deg);
+}
+
+.preview[data-variant='1'] .image {
+    transform: scaleX(-1);
+}
+
+.preview[data-variant='2'] .image {
+    filter: sepia(0.22) contrast(1.05);
+}
+
+.preview[data-variant='3'] .image {
+    filter: hue-rotate(120deg) saturate(0.75);
+}
+
+.status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.titleButton {
+    text-align: left;
+}
+
+.title {
+    margin: 0;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+.titleButton:hover .title {
+    color: var(--g-color-text-link);
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 0;
+}
+
+.metrics div {
+    min-width: 0;
+}
+
+.metrics dt {
+    margin-bottom: 2px;
+    color: var(--g-color-text-secondary);
+    font-size: 12px;
+}
+
+.metrics dd {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.resources {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 22px;
+    gap: 6px;
+}

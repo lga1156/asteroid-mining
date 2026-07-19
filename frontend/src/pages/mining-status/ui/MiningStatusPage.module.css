@@ -1,0 +1,99 @@
+.page {
+    width: min(1120px, calc(100% - 48px));
+    min-height: calc(100vh - 150px);
+    margin: 0 auto;
+    padding: 48px 0 72px;
+}
+
+.connection {
+    margin-bottom: 24px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.card {
+    overflow: hidden;
+    background: var(--g-color-base-background);
+}
+
+.cardButton {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+    min-height: 210px;
+    padding: 20px;
+    border: 0;
+    color: inherit;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+}
+
+.cardButton:hover {
+    background: var(--g-color-base-simple-hover);
+}
+
+.cardHeader,
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.missionIcon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    place-items: center;
+    color: var(--g-color-text-info);
+    background: var(--g-color-base-info-light);
+}
+
+.card h2 {
+    margin: 22px 0 7px;
+    font-size: 18px;
+}
+
+.date {
+    margin: 0;
+    color: var(--g-color-text-secondary);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.cardFooter {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--g-color-line-generic);
+    color: var(--g-color-text-secondary);
+    font-size: 13px;
+}
+
+.cardFooter strong {
+    color: var(--g-color-text-primary);
+    font-size: 17px;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .page {
+        width: min(100% - 32px, 1120px);
+        padding-top: 32px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,35 @@
+.header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.title {
+    margin: 0;
+    font-family: var(--g-text-display-font-family);
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.08;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.description {
+    max-width: 720px;
+    margin: 10px 0 0;
+    color: var(--g-color-text-secondary);
+    font-size: 15px;
+    line-height: 22px;
+}
+
+.actions {
+    flex-shrink: 0;
+}
+
+@media (max-width: 620px) {
+    .header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

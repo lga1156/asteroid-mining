@@ -1,0 +1,104 @@
+.page {
+    width: min(1120px, calc(100% - 48px));
+    min-height: calc(100vh - 150px);
+    margin: 0 auto;
+    padding: 48px 0 72px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.75fr);
+    align-items: start;
+    gap: 28px;
+}
+
+.asteroids {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.asteroid {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    background: var(--g-color-base-background);
+}
+
+.image {
+    width: 84px;
+    height: 68px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: var(--g-color-base-generic);
+}
+
+.asteroidInfo {
+    min-width: 0;
+}
+
+.asteroidInfo h2 {
+    margin: 0 0 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.asteroidInfo p,
+.notice,
+.feedback {
+    margin: 0;
+    color: var(--g-color-text-secondary);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.summary {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.notice {
+    text-align: center;
+}
+
+.feedback {
+    font-size: 14px;
+}
+
+@media (max-width: 850px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .summary {
+        position: static;
+    }
+}
+
+@media (max-width: 620px) {
+    .page {
+        width: min(100% - 32px, 1120px);
+        padding-top: 32px;
+    }
+
+    .asteroid {
+        grid-template-columns: 64px minmax(0, 1fr);
+    }
+
+    .image {
+        width: 64px;
+        height: 58px;
+    }
+
+    .asteroid > button {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
