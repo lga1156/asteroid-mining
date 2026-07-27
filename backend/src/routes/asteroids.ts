@@ -3,9 +3,10 @@
  */
 
 import express, { type Router } from 'express';
+import { asteroidsController } from '../controllers/asteroidsController';
 
 const router: Router = express.Router();
 
-router.get('/', ); // your code here
+router.get('/', asteroidsController.getAsteroids.bind(asteroidsController));
 
 export default router;
