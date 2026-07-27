@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET ?? 'http://51.250.39.129:5678';
+const websocketProxyTarget = process.env.VITE_WS_PROXY_TARGET ?? 'http://51.250.39.129:5679';
+
 export default defineConfig({
     plugins: [react()],
     build: {
@@ -14,12 +17,12 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'http://51.250.39.129:5678',
+                target: apiProxyTarget,
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },
             '/status': {
-                target: 'http://51.250.39.129:5679',
+                target: websocketProxyTarget,
                 changeOrigin: true,
                 ws: true,
             },
@@ -28,12 +31,12 @@ export default defineConfig({
     preview: {
         proxy: {
             '/api': {
-                target: 'http://51.250.39.129:5678',
+                target: apiProxyTarget,
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },
             '/status': {
-                target: 'http://51.250.39.129:5679',
+                target: websocketProxyTarget,
                 changeOrigin: true,
                 ws: true,
             },

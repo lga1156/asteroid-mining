@@ -19,9 +19,13 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
     timeZone: 'UTC',
 });
 
+export function formatNumber(value: number): string {
+    return numberFormatter.format(value);
+}
+
 export function AsteroidDialog({ asteroid, onClose, open }: AsteroidDialogProps) {
     return (
-        <Dialog open={open} onClose={onClose} size="m" hasCloseButton>
+        <Dialog open={open} onClose={onClose} size="m" hasCloseButton qa="asteroid-dialog">
             <Dialog.Header caption={asteroid.name} />
             <Dialog.Body className={styles.body}>
                 <DefinitionList responsive className={styles.metrics}>
@@ -29,11 +33,11 @@ export function AsteroidDialog({ asteroid, onClose, open }: AsteroidDialogProps)
                         {dateFormatter.format(new Date(`${asteroid.approachDate}T00:00:00Z`))}
                     </DefinitionList.Item>
                     <DefinitionList.Item name="Диаметр">
-                        {numberFormatter.format(asteroid.diameterMeters)} м
+                        {formatNumber(asteroid.diameterMeters)} м
                     </DefinitionList.Item>
                     <DefinitionList.Item name="Расстояние">
-                        {numberFormatter.format(asteroid.distanceKm)} км ·{' '}
-                        {numberFormatter.format(asteroid.distanceLunar)} лунных орбит
+                        {formatNumber(asteroid.distanceKm)} км ·{' '}
+                        {formatNumber(asteroid.distanceLunar)} лунных орбит
                     </DefinitionList.Item>
                 </DefinitionList>
 

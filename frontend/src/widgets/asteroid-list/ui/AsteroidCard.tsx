@@ -27,7 +27,12 @@ export function AsteroidCard({ asteroid }: AsteroidCardProps) {
 
     return (
         <>
-            <Card className={styles.card} type="container" view="outlined">
+            <Card
+                className={styles.card}
+                type="container"
+                view="outlined"
+                data-testid="asteroid-card"
+            >
                 <button
                     className={styles.preview}
                     data-variant={getAsteroidImageVariant(asteroid.id)}

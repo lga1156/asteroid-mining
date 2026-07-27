@@ -15,12 +15,17 @@ const RESOURCE_THEMES = {
     mineral: 'utility',
 } as const;
 
+export function getResourceTheme(resource: Pick<AsteroidResource, 'kind'>) {
+    return RESOURCE_THEMES[resource.kind];
+}
+
 export function ResourceBadge({ resource, showName = false }: ResourceBadgeProps) {
     return (
         <Label
             className={styles.badge}
             size="xs"
-            theme={RESOURCE_THEMES[resource.kind]}
+            theme={getResourceTheme(resource)}
+            data-resource-kind={resource.kind}
             title={`${resource.name} · ${getResourceKindLabel(resource.kind)}`}
         >
             <span className={styles.symbol}>{resource.symbol}</span>

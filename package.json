@@ -10,6 +10,10 @@
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
         "lint": "npm run lint --workspaces --if-present",
         "lint:fix": "npm run lint:fix --workspaces --if-present",
+        "test": "npm run test --workspaces --if-present",
+        "test:unit": "npm run test:unit --workspace frontend && npm test --workspace backend",
+        "test:e2e": "npm run test:e2e --workspace frontend",
+        "test:visual": "npm run test:visual --workspace frontend",
         "start": "run-p start:backend start:frontend",
         "start:backend": "cd backend && npm run dev",
         "start:frontend": "cd frontend && npm run dev"
