@@ -19,6 +19,10 @@ import {
 const loadTimer = createLoadTimer();
 loadTimer.start();
 
+if (new URLSearchParams(window.location.search).get('hideStats') === 'true') {
+    document.getElementById('stats').hidden = true;
+}
+
 let sharedWorker;
 
 function fetchSizeAsync(url) {

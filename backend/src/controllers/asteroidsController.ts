@@ -8,7 +8,14 @@ import { resourcesService } from '../services/resourcesService';
 import { xmlService } from '../services/xmlService';
 import { cacheService } from '../services/cacheService';
 import { statusById } from '../functions/statusById';
-import { Asteroid, AsteroidSummary, Element, ParsedResource, Resource } from '../types';
+import {
+    Asteroid,
+    AsteroidResponse,
+    AsteroidSummary,
+    Element,
+    ParsedResource,
+    Resource,
+} from '../types';
 import { ASTEROIDS_CACHE_KEY_BASE, RESOURCES_CACHE_KEY_BASE } from '../config/constants';
 import { HttpError } from '../middleware/errorHandler';
 
@@ -45,6 +52,36 @@ function enrichResource(resource: ParsedResource, elementsBySlug: Map<string, El
 }
 
 export class AsteroidsController {
+    private async enrichAsteroid(
+        summary: AsteroidSummary,
+        elementsBySlug: Map<string, Element>
+    ): Promise<AsteroidResponse> {
+        const asteroidCacheKey = `${ASTEROIDS_CACHE_KEY_BASE}_${summary.id}_enriched`;
+        let asteroid = cacheService.get<Asteroid>(asteroidCacheKey);
+
+        if (!asteroid) {
+            const parsedResourcesCacheKey = `${RESOURCES_CACHE_KEY_BASE}_${summary.id}_parsed`;
+            let parsedResources = cacheService.get<ParsedResource[]>(parsedResourcesCacheKey);
+            if (!parsedResources) {
+                const xml = await resourcesService.getAsteroidDetails(summary.id);
+                parsedResources =
+                    cacheService.get<ParsedResource[]>(parsedResourcesCacheKey) ??
+                    xmlService.parse(xml);
+                cacheService.set(parsedResourcesCacheKey, parsedResources);
+            }
+
+            asteroid = {
+                ...summary,
+                resources: parsedResources.map((resource) =>
+                    enrichResource(resource, elementsBySlug)
+                ),
+            };
+            cacheService.set(asteroidCacheKey, asteroid);
+        }
+
+        return { ...asteroid, status: await statusById(summary.id) };
+    }
+
     public async getAsteroids(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const page = parsePositiveInteger(req.query.page, DEFAULT_PAGE);
@@ -59,33 +96,7 @@ export class AsteroidsController {
             const elementsBySlug = new Map(elements.map((element) => [element.slug, element]));
 
             const asteroids = await Promise.all(
-                asteroidPage.items.map(async (summary: AsteroidSummary) => {
-                    const asteroidCacheKey = `${ASTEROIDS_CACHE_KEY_BASE}_${summary.id}_enriched`;
-                    let asteroid = cacheService.get<Asteroid>(asteroidCacheKey);
-
-                    if (!asteroid) {
-                        const parsedResourcesCacheKey = `${RESOURCES_CACHE_KEY_BASE}_${summary.id}_parsed`;
-                        let parsedResources =
-                            cacheService.get<ParsedResource[]>(parsedResourcesCacheKey);
-                        if (!parsedResources) {
-                            const xml = await resourcesService.getAsteroidDetails(summary.id);
-                            parsedResources =
-                                cacheService.get<ParsedResource[]>(parsedResourcesCacheKey) ??
-                                xmlService.parse(xml);
-                            cacheService.set(parsedResourcesCacheKey, parsedResources);
-                        }
-
-                        asteroid = {
-                            ...summary,
-                            resources: parsedResources.map((resource) =>
-                                enrichResource(resource, elementsBySlug)
-                            ),
-                        };
-                        cacheService.set(asteroidCacheKey, asteroid);
-                    }
-
-                    return { ...asteroid, status: await statusById(summary.id) };
-                })
+                asteroidPage.items.map((summary) => this.enrichAsteroid(summary, elementsBySlug))
             );
 
             res.json({
@@ -94,6 +105,26 @@ export class AsteroidsController {
                 page,
                 perPage,
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    public async getAsteroidById(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { id } = req.params;
+            if (typeof id !== 'string') {
+                throw new HttpError('Invalid asteroid ID', 400);
+            }
+
+            const summary = await asteroidsService.getAsteroidById(id);
+            if (!summary) {
+                throw new HttpError('Asteroid not found', 404);
+            }
+
+            const elements = await resourcesService.getElementsList();
+            const elementsBySlug = new Map(elements.map((element) => [element.slug, element]));
+            res.json(await this.enrichAsteroid(summary, elementsBySlug));
         } catch (error) {
             next(error);
         }

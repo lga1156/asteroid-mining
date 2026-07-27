@@ -1,11 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from '@gravity-ui/uikit';
 import '@gravity-ui/uikit/styles/fonts.css';
 import '@gravity-ui/uikit/styles/styles.css';
 
 import './index.css';
-import { App } from './App';
+import { App } from './app/App';
 
 const rootElement = document.getElementById('root');
 
@@ -15,8 +14,6 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
     <StrictMode>
-        <ThemeProvider theme="light">
-            <App />
-        </ThemeProvider>
+        <App />
     </StrictMode>
 );

@@ -1,0 +1,5 @@
+.description {
+    margin: 0;
+    color: var(--g-color-text-secondary);
+    line-height: 20px;
+}

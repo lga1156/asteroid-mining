@@ -1,0 +1,90 @@
+.card {
+    padding: 20px;
+    background: var(--g-color-base-background);
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.title {
+    margin: 0;
+    font-size: 20px;
+}
+
+.caption {
+    margin: 6px 0 0;
+    color: var(--g-color-text-secondary);
+    font-size: 13px;
+}
+
+.count {
+    display: grid;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 16px;
+    place-items: center;
+    color: var(--g-color-text-info);
+    font-weight: 600;
+    background: var(--g-color-base-info-light);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 52px;
+    border-top: 1px solid var(--g-color-line-generic);
+}
+
+.symbol {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    place-items: center;
+    color: #294f9c;
+    font-size: 11px;
+    font-weight: 700;
+    background: #dbe8ff;
+}
+
+.symbol[data-kind='liquid'] {
+    color: #835c00;
+    background: #fff0bd;
+}
+
+.symbol[data-kind='gas'] {
+    color: #16606d;
+    background: #d4f2f5;
+}
+
+.name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.name small {
+    display: block;
+    color: var(--g-color-text-secondary);
+    font-size: 11px;
+}
+
+.amount {
+    font-size: 13px;
+    white-space: nowrap;
+}
