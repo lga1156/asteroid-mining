@@ -1,6 +1,6 @@
 import { Accordion, DefinitionList, Dialog } from '@gravity-ui/uikit';
 
-import type { Asteroid, Resource } from '../types/asteroid';
+import type { Asteroid, Resource } from '../types/domain';
 import styles from './AsteroidDialog.module.css';
 import { ResourceIcon } from './ResourceIcon';
 
@@ -17,18 +17,41 @@ function formatNumber(value: number) {
 }
 
 function ResourceDefinitionList({ resource }: { resource: Resource }) {
-    const { mass, volume, volatility, superconductingThreshold } = resource;
-
-    return (
-        <DefinitionList responsive>
-            <DefinitionList.Item name="Масса">{formatNumber(mass!)}</DefinitionList.Item>
-            <DefinitionList.Item name="Объем">{formatNumber(volume!)}</DefinitionList.Item>
-            <DefinitionList.Item name="Летучесть">{formatNumber(volatility!)}</DefinitionList.Item>
-            <DefinitionList.Item name="Порог сверхпроводимости">
-                {formatNumber(superconductingThreshold!)}
-            </DefinitionList.Item>
-        </DefinitionList>
-    );
+    switch (resource.kind) {
+        case 'mineral':
+            return (
+                <DefinitionList responsive>
+                    <DefinitionList.Item name="Масса">
+                        {formatNumber(resource.mass)} т
+                    </DefinitionList.Item>
+                    <DefinitionList.Item name="Порог сверхпроводимости">
+                        {formatNumber(resource.superconductingThreshold)} К
+                    </DefinitionList.Item>
+                </DefinitionList>
+            );
+        case 'liquid':
+            return (
+                <DefinitionList responsive>
+                    <DefinitionList.Item name="Объем">
+                        {formatNumber(resource.volume)} л
+                    </DefinitionList.Item>
+                    <DefinitionList.Item name="Давление испарения">
+                        {formatNumber(resource.volatility)} Па
+                    </DefinitionList.Item>
+                </DefinitionList>
+            );
+        case 'gas':
+            return (
+                <DefinitionList responsive>
+                    <DefinitionList.Item name="Объем">
+                        {formatNumber(resource.volume)} м³
+                    </DefinitionList.Item>
+                    <DefinitionList.Item name="Давление разложения">
+                        {formatNumber(resource.volatility)} Па
+                    </DefinitionList.Item>
+                </DefinitionList>
+            );
+    }
 }
 
 export function AsteroidDialog({ asteroid, open, onClose }: AsteroidDialogProps) {

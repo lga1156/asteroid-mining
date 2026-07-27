@@ -26,8 +26,7 @@ export function Navigation() {
                         size="m"
                         href={item.href}
                         focused={item.active?.toString()}
-                        // @ts-ignore
-                        aria-label={item.ariaLabel}
+                        aria-label={item.label}
                     >
                         {item.label}
                     </Button>

@@ -1,4 +1,10 @@
 import { SAMPLE_ASTEROIDS } from './sampleAsteroids';
+import {
+    createMiningId,
+    type ApiResult,
+    type MiningRequest,
+    type MiningResponse,
+} from '../types/domain';
 
 const REQUEST_DELAY_MS = 500;
 const FAILURE_RATE = 0;
@@ -8,11 +14,9 @@ const wait = (delayMs: number) =>
         window.setTimeout(resolve, delayMs);
     });
 
-interface MineAsteroidParams {
-    asteroids: string[];
-}
-
-export async function mineAsteroid({ asteroids }: MineAsteroidParams): Promise<void> {
+export async function mineAsteroid({
+    asteroids,
+}: MiningRequest): Promise<ApiResult<MiningResponse>> {
     // На момент выполнения домашки по типизации у вас ещё не будет рабочего
     // сервера. Пока оставьте такую заглушку, но подумайте о будущем: как вы
     // будете обрабатывать ошибки и как сделать это явно на уровне типизации
@@ -21,13 +25,24 @@ export async function mineAsteroid({ asteroids }: MineAsteroidParams): Promise<v
 
     // Для тестирования обработки ошибки поднимите FAILURE_RATE
     if (Math.random() < FAILURE_RATE) {
-        throw new Error('500 - Вымышленный бекенд временно недоступен');
+        return {
+            ok: false,
+            error: { code: 500, error: 'Вымышленный бекенд временно недоступен' },
+        };
     }
 
     const existingAsteroidIds = new Set(SAMPLE_ASTEROIDS.map((asteroid) => asteroid.id));
     const hasMissingAsteroid = asteroids.some((asteroid) => !existingAsteroidIds.has(asteroid));
 
     if (hasMissingAsteroid) {
-        throw new Error('404 - Вымышленный бекенд не нашёл астероид для добычи');
+        return {
+            ok: false,
+            error: { code: 404, error: 'Вымышленный бекенд не нашёл астероид для добычи' },
+        };
     }
+
+    return {
+        ok: true,
+        data: { id: createMiningId(`mining-${Date.now()}`), asteroids },
+    };
 }
