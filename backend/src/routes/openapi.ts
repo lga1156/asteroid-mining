@@ -16,7 +16,8 @@ export const openapiDocument: OpenAPIV3.Document = {
         '/asteroids': {
             get: {
                 summary: 'Get list of asteroids',
-                description: 'Retrieve a paginated list of asteroids with their resources and mining status',
+                description:
+                    'Retrieve a paginated list of asteroids with their resources and mining status',
                 tags: ['Asteroids'],
                 parameters: [
                     {
@@ -48,10 +49,17 @@ export const openapiDocument: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'array',
-                                    items: {
-                                        $ref: '#/components/schemas/AsteroidResponse',
-                                    },
+                                    $ref: '#/components/schemas/AsteroidResponse',
+                                },
+                            },
+                        },
+                    },
+                    '400': {
+                        description: 'Invalid pagination parameters',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
                                 },
                             },
                         },
@@ -236,13 +244,39 @@ export const openapiDocument: OpenAPIV3.Document = {
                     },
                 },
             },
+            Coordinates: {
+                type: 'object',
+                required: ['rightAscension', 'declination', 'distance'],
+                properties: {
+                    rightAscension: { type: 'number' },
+                    declination: { type: 'number' },
+                    distance: { type: 'number', minimum: 0 },
+                },
+            },
             Asteroid: {
                 type: 'object',
-                required: ['id', 'resources'],
+                required: ['id', 'name', 'radius', 'mass', 'coordinates', 'resources'],
                 properties: {
                     id: {
                         type: 'string',
                         description: 'Unique asteroid identifier',
+                    },
+                    name: {
+                        type: 'string',
+                        description: 'Human-readable asteroid name',
+                    },
+                    radius: {
+                        type: 'number',
+                        minimum: 0,
+                        description: 'Asteroid radius in meters',
+                    },
+                    mass: {
+                        type: 'number',
+                        minimum: 0,
+                        description: 'Asteroid mass in kilograms',
+                    },
+                    coordinates: {
+                        $ref: '#/components/schemas/Coordinates',
                     },
                     resources: {
                         type: 'array',
@@ -277,17 +311,28 @@ export const openapiDocument: OpenAPIV3.Document = {
                                     },
                                 },
                             ],
-                        }
+                        },
                     },
                     total: {
                         type: 'integer',
                         description: 'Общее число астероидов во внешнем API',
                         example: 200,
                     },
-                    page: { type: 'integer', description: 'Применённый номер страницы', example: 20 },
-                    perPage: { type: 'integer', description: 'Примененное количество астероидов на странице', example: 0 },
+                    page: {
+                        type: 'integer',
+                        minimum: 1,
+                        description: 'Применённый номер страницы',
+                        example: 1,
+                    },
+                    perPage: {
+                        type: 'integer',
+                        minimum: 1,
+                        maximum: 100,
+                        description: 'Примененное количество астероидов на странице',
+                        example: 20,
+                    },
                 },
-                required: ['asteroids', 'total'],
+                required: ['asteroids', 'total', 'page', 'perPage'],
             },
             MiningRequest: {
                 type: 'object',
@@ -297,10 +342,17 @@ export const openapiDocument: OpenAPIV3.Document = {
                         type: 'array',
                         items: {
                             type: 'string',
+                            format: 'uuid',
+                            pattern:
+                                '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
                         },
                         minItems: 1,
+                        maxItems: 100,
                         description: 'Array of asteroid IDs to mine',
-                        example: ['asteroid-001', 'asteroid-002'],
+                        example: [
+                            '019ec716-a81a-7571-81d5-8e92b1f8cbfe',
+                            '019ec716-a81a-7db1-98af-0f069a9a71a0',
+                        ],
                     },
                 },
             },
@@ -329,11 +381,16 @@ export const openapiDocument: OpenAPIV3.Document = {
             },
             MiningResponse: {
                 type: 'object',
-                required: ['id', 'asteroids'],
+                required: ['id', 'status', 'asteroids'],
                 properties: {
                     id: {
                         type: 'string',
                         description: 'Unique mining operation identifier',
+                    },
+                    status: {
+                        type: 'string',
+                        enum: ['active'],
+                        description: 'Initial mining status',
                     },
                     asteroids: {
                         type: 'array',

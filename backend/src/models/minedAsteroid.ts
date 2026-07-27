@@ -4,6 +4,6 @@
  */
 
 export interface MinedAsteroid {
-  id: string;
-  mining_id: string;
+    id: string;
+    mining_id: string;
 }

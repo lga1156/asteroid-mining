@@ -6,13 +6,12 @@
 import { Mining, MinedAsteroid } from '../types';
 
 export interface Database {
-  minings: Map<string, Mining>;
-  mined_asteroids: Map<string, MinedAsteroid>;
+    minings: Map<string, Mining>;
+    mined_asteroids: Map<string, MinedAsteroid>;
 }
 
 // Initialize database with empty tables
 export const db: Database = {
-  // your code here
+    minings: new Map(),
+    mined_asteroids: new Map(),
 };
-
-
