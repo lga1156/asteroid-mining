@@ -6,6 +6,8 @@
     "scripts": {
         "postinstall": "npx husky",
         "build": "npm run build --workspaces",
+        "typecheck": "npm run typecheck --workspaces",
+        "test": "npm run test --workspaces --if-present",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
         "lint": "npm run lint --workspaces --if-present",

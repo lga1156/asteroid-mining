@@ -1,11 +1,133 @@
+on:
+  pull_request:
+    - workflows: pr-checks
+      filter:
+        target_branches: [main]
+  push:
+    - workflows: main-checks
+      filter:
+        branches: [main]
+    - workflows: release
+      filter:
+        tags: ["v*"]
+  schedule:
+    - workflows: e2e
+      cron: "0 9 * * *"
+      description: Daily site check at 12:00 MSK
+    - workflows: dependencies
+      cron: "0 8 * * 2,4"
+      description: Dependency audit at 11:00 MSK on Tuesday and Thursday
+
 workflows:
+  pr-checks:
+    tasks:
+      - name: quality
+        cubes:
+          - {name: install, image: "node:22-alpine", script: [npm ci]}
+          - {name: typecheck, image: "node:22-alpine", script: [npm run typecheck]}
+          - {name: lint, image: "node:22-alpine", script: [npm run lint]}
+          - {name: prettier, image: "node:22-alpine", script: ["npm run format:check"]}
+          - {name: test, image: "node:22-alpine", script: [npm test]}
+
+  main-checks:
+    tasks:
+      - name: quality-and-build
+        cubes:
+          - {name: install, image: "node:22-alpine", script: [npm ci]}
+          - {name: typecheck, image: "node:22-alpine", script: [npm run typecheck]}
+          - {name: lint, image: "node:22-alpine", script: [npm run lint]}
+          - {name: prettier, image: "node:22-alpine", script: ["npm run format:check"]}
+          - {name: test, image: "node:22-alpine", script: [npm test]}
+          - {name: build, image: "node:22-alpine", script: [npm run build]}
+
+  release:
+    settings:
+      max_cube_duration: 15m
+    tasks:
+      - name: validate-release-and-publish
+        cubes:
+          - {name: install, image: "node:22-alpine", script: [npm ci]}
+          - name: quality
+            image: node:22-alpine
+            script:
+              - npm run typecheck
+              - npm run lint
+              - npm run format:check
+              - npm test
+          - name: build-site
+            image: node:22-alpine
+            env:
+              VITE_API_BASE_URL: http://51.250.39.129:6678
+              VITE_WS_URL: ws://51.250.39.129:6679
+              VITE_BASE_PATH: /shri-student-meleshenkokolya/
+            script: [npm run build --workspace frontend]
+          - name: create-sourcecraft-release
+            image: node:22-alpine
+            script:
+              - |
+                set -eu
+                TAG="$SOURCECRAFT_COMMIT_REF_NAME"
+                NOTES=$(awk -v tag="$TAG" '
+                  $0 ~ "^## \\[" tag "\\]( |$)" { found=1; next }
+                  found && /^## / { exit }
+                  found { print }
+                ' CHANGELOG.md)
+                test -n "$NOTES" || { echo "No CHANGELOG.md section for $TAG"; exit 1; }
+                REPO_PATH=${SOURCECRAFT_REPO_URL%.git}
+                REPO_PATH=${REPO_PATH##*/git.sourcecraft.dev/}
+                ORG=${REPO_PATH%%/*}
+                REPO=${REPO_PATH#*/}
+                export TAG NOTES
+                BODY=$(node -e 'process.stdout.write(JSON.stringify({tag:process.env.TAG,target_branch:"main",title:process.env.TAG,release_notes:process.env.NOTES,publish:true}))')
+                API_URL="https://api.sourcecraft.tech/repos/$ORG/$REPO/releases"
+                STATUS=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+                  --header "Authorization: Bearer $SOURCECRAFT_TOKEN" "$API_URL/tag/$TAG")
+                if [ "$STATUS" = 200 ]; then
+                  echo "Release $TAG already exists; continuing"
+                else
+                  curl --fail-with-body --request POST \
+                    --header "Authorization: Bearer $SOURCECRAFT_TOKEN" \
+                    --header "Content-Type: application/json" \
+                    --data "$BODY" "$API_URL"
+                fi
+          - name: publish-release-branch
+            script:
+              - |
+                set -eu
+                git config user.name "SourceCraft CI"
+                git config user.email "ci@sourcecraft.dev"
+                git checkout -B release "$SOURCECRAFT_COMMIT_REF_NAME"
+                sed -i '/^frontend\/dist$/d' .gitignore
+                git add .gitignore
+                git add -f frontend/dist
+                git commit -m "release: $SOURCECRAFT_COMMIT_REF_NAME"
+                git push origin release --force
+
+  e2e:
+    env:
+      SITE_URL: https://ya-schools-summer.sourcecraft.site/shri-student-meleshenkokolya/
+    tasks:
+      - name: smoke-test
+        cubes:
+          - name: curl-site
+            image: curlimages/curl:8.12.1
+            script: [curl --fail --show-error --silent --retry 3 "$SITE_URL" >/dev/null]
+
+  dependencies:
+    tasks:
+      - name: outdated-dependencies
+        cubes:
+          - name: npm-outdated
+            image: node:22-alpine
+            allow_failure: true
+            script: [npm outdated]
+
   submit-grade:
     inputs:
       GRADE:
         type: string
         required: true
         description: Количество баллов за работу студента. Должно быть целым числом от 0 до 100.
-
     tasks:
       - name: submit-grade
         cubes:
@@ -22,12 +144,10 @@ workflows:
                   echo "Invalid grade: \"${{ inputs.GRADE }}\". Expected integer from 0 to 100."
                   exit 1
                 fi
-
           - name: prepare-student-repo-slug
             script:
               - |
                 echo "STUDENT_REPO_SLUG=$(basename "$SOURCECRAFT_REPO_URL" .git)" >> $SOURCECRAFT_OUTPUT
-
           - name: run-shared-workflow
             allow_failure: true
             image: cr.yandex/sourcecraft/cubes/shared-workflows:latest
@@ -37,17 +157,15 @@ workflows:
               WORKFLOW_NAME: submit-grade
               WORKFLOW_VALUES: |
                 [
-                  {"name": "TASK_NAME",         "value": "${{ env.SOURCECRAFT_COMMIT_REF_NAME }}"},
-                  {"name": "GRADE",             "value": "${{ inputs.GRADE }}"},
+                  {"name": "TASK_NAME", "value": "${{ env.SOURCECRAFT_COMMIT_REF_NAME }}"},
+                  {"name": "GRADE", "value": "${{ inputs.GRADE }}"},
                   {"name": "STUDENT_REPO_SLUG", "value": "${{ cubes.prepare-student-repo-slug.outputs.STUDENT_REPO_SLUG }}"}
                 ]
               TASK_NAME: submit-grade
               CUBE_NAME: result
               ARTIFACT_LOCAL_PATH: artifacts/output
             artifacts:
-              paths:
-                - artifacts/output
-
+              paths: [artifacts/output]
           - name: get-result
             script:
               - |

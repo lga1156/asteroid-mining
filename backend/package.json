@@ -8,6 +8,7 @@
         "lint:fix": "eslint . --fix",
         "start": "npm run build && node dist/src/server.js",
         "build": "tsc",
+        "typecheck": "tsc --noEmit --pretty false",
         "dev": "ts-node src/server.ts",
         "test": "jest",
         "test:homework": "jest criteria-tests/"

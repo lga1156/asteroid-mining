@@ -6,6 +6,14 @@ branch_protection:
         - prevent_deletion
         - prevent_force_push
         - prevent_non_pr_changes
+    - target: branch
+      matches: "release"
+      rules:
+        - prevent_deletion
+    - target: tag
+      matches: "v*"
+      rules:
+        - prevent_deletion
 
 pull_request: 
   branch_cleanup: 

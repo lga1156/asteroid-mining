@@ -104,6 +104,33 @@ npm ci
 npm start
 ```
 
+### Docker Compose
+
+Скопируйте пример конфигурации и запустите оба контейнера:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Frontend будет доступен на `http://localhost:8080`, REST backend — на
+`http://localhost:5678`, WebSocket — на `ws://localhost:5679/status`. Значения
+портов и URL сервисов настраиваются в `.env`. Переменные `VITE_*` встраиваются
+в frontend во время сборки образа; backend читает свои переменные при запуске.
+
+### CI/CD и релизы
+
+SourceCraft запускает typecheck, ESLint, Prettier и тесты для каждого pull
+request. В `main` дополнительно проверяется production-сборка. Расписания в
+`.sourcecraft/ci.yaml` записаны в UTC: smoke-тест сайта запускается ежедневно в
+12:00 МСК, `npm outdated` — по вторникам и четвергам в 11:00 МСК.
+
+Для релиза добавьте секцию `## [vX.Y.Z]` в `CHANGELOG.md`, обновите версию
+пакета, затем создайте и отправьте тег `v*`. Пайплайн создаст SourceCraft release
+через API, соберёт frontend с общим BFF и обновит защищённую ветку `release`, из
+которой `.sourcecraft/sites.yaml` публикует сайт. Токен API предоставляется CI в
+переменной `SOURCECRAFT_TOKEN`; хранить PAT в репозитории не требуется.
+
 Для React-приложения достаточно запустить frontend:
 
 ```bash

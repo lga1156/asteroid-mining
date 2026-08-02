@@ -1,0 +1,28 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://51.250.39.129:6678}
+        VITE_WS_URL: ${VITE_WS_URL:-ws://51.250.39.129:6679}
+        VITE_BASE_PATH: ${VITE_BASE_PATH:-/}
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      ASTEROIDS_API_URL: ${ASTEROIDS_API_URL:-http://51.250.39.129:4001}
+      RESOURCES_API_URL: ${RESOURCES_API_URL:-http://51.250.39.129:4002}
+      CONCURRENT_REQUEST_LIMIT: ${CONCURRENT_REQUEST_LIMIT:-5}
+      STATUS_POLL_INTERVAL: ${STATUS_POLL_INTERVAL:-5000}
+      MINING_UPDATE_INTERVAL: ${MINING_UPDATE_INTERVAL:-60000}
+      SERVER_PORT: 5678
+      WEBSOCKET_PORT: 5679
+    ports:
+      - "${BACKEND_PORT:-5678}:5678"
+      - "${WEBSOCKET_PORT:-5679}:5679"
+    restart: unless-stopped
